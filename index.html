@@ -4,64 +4,266 @@
   <meta charset="UTF-8" />
   <title>Мы тут работаем 🚀</title>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; background:#fff; color:#222;}
-    .dark { background:#23272d; color:#eceef1;}
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      margin:0; 
+      background:#fff; 
+      color:#222;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .dark { 
+      background:#23272d; 
+      color:#eceef1;
+    }
     .toggle-theme {
-      position:fixed; top:18px; right:24px; font-size:26px;
-      background: none; border: none; cursor: pointer; z-index:10;
+      position:fixed; 
+      top:18px; 
+      right:24px; 
+      font-size:26px;
+      background: none; 
+      border: none; 
+      cursor: pointer; 
+      z-index:10;
+      color: inherit;
     }
-    .layout { display:flex; max-width:900px; margin:0 auto;}
-    .leftbar { width:160px; min-width:110px; background:#f9f9f9; border-right:1px solid #e1e1e1; padding:32px 14px 0 14px;}
-    .mini-timers { display:flex; flex-direction:column; gap:13px;}
-    .mini-timer { display:flex; align-items:center; font-size:0.98em; margin-bottom:0;}
-    .mini-name { width:86px; padding-right:7px;}
-    .mini-display { font-family:monospace; min-width:108px; font-size:0.96em;}
+    .layout { 
+      display:flex; 
+      max-width:900px; 
+      margin:0 auto;
+    }
+    .leftbar { 
+      width:160px; 
+      min-width:110px; 
+      background:#f9f9f9; 
+      border-right:1px solid #e1e1e1; 
+      padding:32px 14px 0 14px;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    .dark .leftbar {
+      background:#2c3139;
+      border-color:#41454b;
+    }
+    .mini-timers { 
+      display:flex; 
+      flex-direction:column; 
+      gap:13px;
+    }
+    .mini-timer { 
+      display:flex; 
+      align-items:center; 
+      font-size:0.98em; 
+      margin-bottom:0;
+    }
+    .mini-name { 
+      width:86px; 
+      padding-right:7px;
+    }
+    .mini-display { 
+      font-family:monospace; 
+      min-width:108px; 
+      font-size:0.96em;
+    }
     .mini-btn {
-      font-size:0.85em; margin-left:7px; padding:4px 14px; border-radius:5px; border:none; font-weight:bold;
-      cursor:pointer; transition:background 0.2s; min-width:52px;
+      font-size:0.85em; 
+      margin-left:7px; 
+      padding:4px 14px; 
+      border-radius:5px; 
+      border:none; 
+      font-weight:bold;
+      cursor:pointer; 
+      transition:background 0.2s; 
+      min-width:52px;
     }
-    .mini-start { background:#27ae60; color:#fff; border:1px solid #229b51;}
-    .mini-stop  { background:#e74c3c; color:#fff; border:1px solid #be2d1d; margin-left:3px;}
-    .mini-start:hover { background:#219150;}
-    .mini-stop:hover  { background:#c0392b;}
-    .center-content { flex:1; padding:34px 24px 12px 24px;}
-    #mainTitle { text-align:center; font-size:2em; font-weight:700; margin-bottom:12px;}
-    #currentDate { text-align: center; font-size:1em; color:#888; margin-bottom:24px;}
-    .section-title { font-weight:bold; margin-top:32px; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:6px; font-size:1.07em;}
-    .btn-reset { display:block; width:100%; max-width:410px; padding:13px; background:#e74c3c; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:1em; margin:23px auto 10px auto;}
-    .item { display:flex; align-items:center; padding:13px; border:1px solid #eee; margin:8px 0; border-radius:10px; background:#fff; width:100%; max-width:420px;}
-    .btn { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:bold; font-size:19px;user-select:none;}
-    .minus { background:#fafad2; color:#555;}
-    .plus { background:#def5e5; color:#27ae60;}
-    .title { flex-grow:1; text-align:center;}
-    .count { font-size:1.13em; font-weight:bold; color:#242f3e;}
-    body.dark .count { color: #fff; }
-    .history-title { font-weight:bold; margin:18px 0 8px 0; border-bottom:1px solid #eee; padding-bottom:3px; font-size:1.07em;}
-    table { width:100%; border-collapse:collapse; margin-top:8px;}
-    th,td { border:1px solid #ddd; padding:8px 10px; text-align:left;}
-    th { background:#f5f7fa; color:#34495e; font-weight:600;}
-    tr:nth-child(even){background:#fcfcfc;}
-    .history-table td { font-family: monospace;}
-    /* Dark mode */
-    body.dark { background:#23272d; color:#eceef1;}
-    body.dark .item   { background:#2c3139; border-color:#41454b;}
-    body.dark th      { background:#343438; color:#eceef1;}
-    body.dark tr:nth-child(even) { background:#292e34;}
-    body.dark .btn-reset {background:#a9312b;}
-    body.dark .plus, body.dark .minus { background:#353c46;}
-    body.dark .section-title, body.dark .history-title { color:#eceef1; border-color:#444;}
-    body.dark .mini-timers, body.dark .mini-timer, body.dark .mini-name { background:#23272d; color:#eceef1;}
-    body.dark .mini-start, body.dark .mini-stop { opacity:0.97;}
+    .mini-start { 
+      background:#27ae60; 
+      color:#fff; 
+      border:1px solid #229b51;
+    }
+    .mini-stop  { 
+      background:#e74c3c; 
+      color:#fff; 
+      border:1px solid #be2d1d; 
+      margin-left:3px;
+    }
+    .mini-start:hover { 
+      background:#219150;
+    }
+    .mini-stop:hover  { 
+      background:#c0392b;
+    }
+    .center-content { 
+      flex:1; 
+      padding:34px 24px 12px 24px;
+    }
+    #mainTitle { 
+      text-align:center; 
+      font-size:2em; 
+      font-weight:700; 
+      margin-bottom:12px;
+    }
+    #currentDate { 
+      text-align: center; 
+      font-size:1em; 
+      color:#888; 
+      margin-bottom:24px;
+    }
+    .section-title { 
+      font-weight:bold; 
+      margin-top:32px; 
+      margin-bottom:10px; 
+      border-bottom:1px solid #eee; 
+      padding-bottom:6px; 
+      font-size:1.07em;
+    }
+    .dark .section-title {
+      border-color:#444;
+    }
+    .btn-reset { 
+      display:block; 
+      width:100%; 
+      max-width:410px; 
+      padding:13px; 
+      background:#e74c3c; 
+      color:white; 
+      border:none; 
+      border-radius:8px; 
+      cursor:pointer; 
+      font-weight:bold; 
+      font-size:1em; 
+      margin:23px auto 10px auto;
+      transition: background-color 0.2s;
+    }
+    .btn-reset:hover {
+      background:#c0392b;
+    }
+    .dark .btn-reset {
+      background:#a9312b;
+    }
+    .dark .btn-reset:hover {
+      background:#8c271f;
+    }
+    .item { 
+      display:flex; 
+      align-items:center; 
+      padding:13px; 
+      border:1px solid #eee; 
+      margin:8px 0; 
+      border-radius:10px; 
+      background:#fff; 
+      width:100%; 
+      max-width:420px;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    .dark .item {
+      background:#2c3139;
+      border-color:#41454b;
+    }
+    .btn { 
+      width:34px; 
+      height:34px; 
+      border-radius:50%; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      cursor:pointer; 
+      font-weight:bold; 
+      font-size:19px;
+      user-select:none;
+      transition: background-color 0.2s;
+    }
+    .minus { 
+      background:#fafad2; 
+      color:#555;
+    }
+    .dark .minus {
+      background:#353c46;
+      color:#eceef1;
+    }
+    .plus { 
+      background:#def5e5; 
+      color:#27ae60;
+    }
+    .dark .plus {
+      background:#353c46;
+      color:#27ae60;
+    }
+    .title { 
+      flex-grow:1; 
+      text-align:center;
+    }
+    .count { 
+      font-size:1.13em; 
+      font-weight:bold; 
+      color:#242f3e;
+    }
+    .dark .count { 
+      color: #ffffff; 
+    }
+    .history-title { 
+      font-weight:bold; 
+      margin:18px 0 8px 0; 
+      border-bottom:1px solid #eee; 
+      padding-bottom:3px; 
+      font-size:1.07em;
+    }
+    .dark .history-title {
+      border-color:#444;
+    }
+    table { 
+      width:100%; 
+      border-collapse:collapse; 
+      margin-top:8px;
+    }
+    th,td { 
+      border:1px solid #ddd; 
+      padding:8px 10px; 
+      text-align:left;
+      transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    }
+    th { 
+      background:#f5f7fa; 
+      color:#34495e; 
+      font-weight:600;
+    }
+    .dark th {
+      background:#343438;
+      color:#eceef1;
+      border-color:#444;
+    }
+    tr:nth-child(even){
+      background:#fcfcfc;
+    }
+    .dark tr:nth-child(even) {
+      background:#292e34;
+    }
+    .dark td {
+      border-color:#444;
+    }
+    .history-table td { 
+      font-family: monospace;
+    }
     @media (max-width:800px) {
-      .layout {flex-direction:column;}
-      .center-content, .leftbar {padding:12px;}
-      .center-content .item, .btn-reset{max-width:98vw;}
-      .leftbar{width:98vw;}
+      .layout {
+        flex-direction:column;
+      }
+      .center-content, .leftbar {
+        padding:12px;
+      }
+      .center-content .item, .btn-reset{
+        max-width:98vw;
+      }
+      .leftbar{
+        width:98vw;
+      }
     }
   </style>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
-<button class="toggle-theme" onclick="toggleTheme()">🌞/🌚</button>
+<button class="toggle-theme" onclick="toggleTheme()">🌞</button>
 <div class="layout">
   <div class="leftbar">
     <div class="mini-timers">
@@ -105,16 +307,9 @@
     </table>
   </div>
 </div>
-<script>
-  // Переключение темы
-  function toggleTheme() {
-    document.body.classList.toggle('dark');
-    localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-  }
-  if(localStorage.getItem('theme')==='dark') document.body.classList.add('dark');
-  document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
 
-  // Firebase
+<script>
+  // Инициализация Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyBb0uemCwfr3LpSjqCfbrPzgXMxqJo8ub0",
     authDomain: "rocketteam-counter.firebaseapp.com",
@@ -122,76 +317,173 @@
     projectId: "rocketteam-counter",
     storageBucket: "rocketteam-counter.firebasestorage.app",
     messagingSenderId: "882235505564",
-    appId: "1:882235505564:web:01dbef24064b0fed5a2659"
+    appId: "1:882235505564:web:01dbef24064b0fed5a2659",
+    measurementId: "G-RN86EZF81C"
   };
-  firebase.initializeApp(firebaseConfig);
+
+  // Инициализируем Firebase только если еще не инициализирован
+  let app;
+  try {
+    app = firebase.app();
+  } catch (e) {
+    app = firebase.initializeApp(firebaseConfig);
+  }
+  
   const db = firebase.database();
   const countersRef = db.ref('counters');
   const historyRef = db.ref('history');
   const lunchRef = db.ref('lunch');
 
-  // Счётчики
+  // Переменные приложения
   let data = [];
-  countersRef.on('value', snapshot => {
-    const val = snapshot.val();
-    if (val) {
-      data = Object.keys(val).map(key => ({
-        key, name: val[key].name, type: val[key].type, count: val[key].count || 0
-      }));
-      renderCounters();
+  let lunchState = {};
+
+  // Переключение темы
+  function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark');
+    const themeButton = document.querySelector('.toggle-theme');
+    themeButton.textContent = isDark ? '🌚' : '🌞';
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }
+
+  // Инициализация темы
+  function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const themeButton = document.querySelector('.toggle-theme');
+    
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark');
+      themeButton.textContent = '🌚';
     } else {
-      initDefaultData();
+      themeButton.textContent = '🌞';
     }
-  });
+  }
+
+  // Установка даты
+  function initDate() {
+    const dateElement = document.getElementById('currentDate');
+    if (dateElement) {
+      dateElement.textContent = new Date().toLocaleDateString('ru-RU', { 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric' 
+      });
+    }
+  }
+
+  // Функции для работы со счетчиками
+  function getKey(name, type) { 
+    return name + '_' + type.replace(/\s+/g, '_'); 
+  }
+
+  function getStep(type) { 
+    return type === "Блокировки" ? 2 : 1;
+  }
+
   function initDefaultData() {
     const defaults = [
-      { name: "Бочкарев", type: "Заявки", count: 0 },
-      { name: "Герц", type: "Заявки", count: 0 },
-      { name: "Согаева", type: "Заявки", count: 0 },
-      { name: "Бочкарев", type: "Блокировки", count: 0 },
-      { name: "Герц", type: "Блокировки", count: 0 },
-      { name: "Согаева", type: "Блокировки", count: 0 }
+      { name: "Бочкарев", type: "Заявки", count: 3 },
+      { name: "Герц", type: "Заявки", count: 3 },
+      { name: "Согаева", type: "Заявки", count: 3 },
+      { name: "Бочкарев", type: "Блокировки", count: 2 },
+      { name: "Герц", type: "Блокировки", count: 2 },
+      { name: "Согаева", type: "Блокировки", count: 2 }
     ];
+    
     const updates = {};
-    defaults.forEach(item => updates[getKey(item.name,item.type)] = item);
-    countersRef.set(updates);
-  }
-  function getKey(name, type) { return name + '_' + type.replace(/\s+/g, '_'); }
-  function getStep(type) { return type === "Блокировки" ? 2 : 1;}
-  function changeCount(name, type, sign) {
-    const item = data.find(i => i.name === name && i.type === type);
-    if (!item) return;
-    const delta = sign * getStep(type);
-    const newCount = Math.max(0, item.count + delta);
-    countersRef.child(getKey(name, type) + '/count').set(newCount);
-    historyRef.push({
-      time: new Date().toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'long' }),
-      type,
-      name,
-      delta
+    defaults.forEach(item => {
+      const key = getKey(item.name, item.type);
+      updates[key] = item;
+    });
+    
+    countersRef.set(updates).catch(error => {
+      console.error('Ошибка инициализации данных:', error);
     });
   }
+
+  function changeCount(name, type, sign) {
+    const item = data.find(i => i.name === name && i.type === type);
+    if (!item) {
+      console.error('Элемент не найден:', name, type);
+      return;
+    }
+    
+    const delta = sign * getStep(type);
+    const newCount = Math.max(0, item.count + delta);
+    
+    countersRef.child(getKey(name, type)).update({ count: newCount })
+      .catch(error => {
+        console.error('Ошибка обновления счетчика:', error);
+      });
+    
+    // Логируем изменение в истории
+    const historyEntry = {
+      time: new Date().toLocaleString('ru-RU', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        day: 'numeric', 
+        month: 'long' 
+      }),
+      type: type,
+      name: name,
+      delta: delta
+    };
+    
+    historyRef.push(historyEntry)
+      .catch(error => {
+        console.error('Ошибка записи в историю:', error);
+      });
+  }
+
   function resetAll() {
     if (!confirm("Обнулить все счётчики?")) return;
+    
     const updates = {};
     let totalClaims = 0, totalBlocks = 0;
+    
     data.forEach(item => {
-      updates[getKey(item.name, item.type) + '/count'] = 0;
+      const key = getKey(item.name, item.type);
+      updates[key + '/count'] = 0;
+      
       if (item.type === "Заявки") totalClaims += item.count;
       if (item.type === "Блокировки") totalBlocks += item.count;
     });
-    countersRef.update(updates).catch(console.error);
-    historyRef.push({
-      time: new Date().toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'long' }),
-      type: "Система", name: "", delta: 0,
-      description: `Обнуление: заявки -${totalClaims}, блокировки -${totalBlocks}`
+    
+    countersRef.update(updates).catch(error => {
+      console.error('Ошибка обнуления счетчиков:', error);
     });
+    
+    // Логируем обнуление в истории
+    const resetEntry = {
+      time: new Date().toLocaleString('ru-RU', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        day: 'numeric', 
+        month: 'long' 
+      }),
+      type: "Система", 
+      name: "", 
+      delta: 0,
+      description: `Обнуление: заявки -${totalClaims}, блокировки -${totalBlocks}`
+    };
+    
+    historyRef.push(resetEntry)
+      .catch(error => {
+        console.error('Ошибка записи обнуления в историю:', error);
+      });
   }
+
   function renderCounters() {
     const claims = data.filter(i => i.type === "Заявки");
     const blocks = data.filter(i => i.type === "Блокировки");
+    
     function renderList(items, containerId) {
       const container = document.getElementById(containerId);
+      if (!container) {
+        console.error('Контейнер не найден:', containerId);
+        return;
+      }
+      
       container.innerHTML = '';
       items.forEach(item => {
         const div = document.createElement('div');
@@ -204,64 +496,132 @@
         container.appendChild(div);
       });
     }
+    
     renderList(claims, 'listClaims');
     renderList(blocks, 'listBlocks');
   }
-  // История
-  historyRef.limitToLast(50).on('value', snapshot => {
-    const val = snapshot.val();
-    const history = val ? Object.values(val).reverse() : [];
-    renderHistory(history);
-  });
+
   function renderHistory(history) {
     const tbody = document.getElementById('historyBody');
-    tbody.innerHTML = '';
-    if (history.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">История пуста</td></tr>';
-    } else {
-      history.forEach(entry => {
-        const changeText = entry.description || (entry.delta > 0 ? '+' : '') + entry.delta;
-        tbody.innerHTML += `
-          <tr>
-            <td>${entry.time}</td>
-            <td>${entry.type}</td>
-            <td>${entry.name}</td>
-            <td>${changeText}</td>
-          </tr>
-        `;
-      });
+    if (!tbody) {
+      console.error('Элемент historyBody не найден');
+      return;
     }
-  }
-  // Таймеры обеда — синхронизация через Firebase
-  lunchRef.on('value', snapshot => {
-    window.lunchState = snapshot.val() || {};
-    updateLunchTimers();
-  });
-  function startLunch(person) {
-    lunchRef.child(person).set(Date.now());
-  }
-  function stopLunch(person) {
-    lunchRef.child(person).set(null);
-  }
-  function updateLunchTimers() {
-    ['bock','gertz','sogaeva'].forEach(person => {
-      const el = document.getElementById('timer-' + person);
-      const started = window.lunchState?.[person];
-      if (!started) { el.textContent = ''; return; }
-      let msLeft = 60 * 60 * 1000 - (Date.now() - started);
-      if (msLeft <= 0) {
-        el.textContent = 'Обед окончен';
-        lunchRef.child(person).set(null); return;
-      }
-      let min = Math.floor(msLeft/60000), sec = Math.floor((msLeft%60000)/1000);
-      let realStart = new Date(started);
-      let hours = String(realStart.getHours()).padStart(2,'0');
-      let minutes = String(realStart.getMinutes()).padStart(2,'0');
-      let timeText = hours + ':' + minutes;
-      el.textContent = ` Осталось ${min} мин ${sec} сек | старт: ${timeText}`;
+    
+    tbody.innerHTML = '';
+    
+    if (!history || history.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">История пуста</td></tr>';
+      return;
+    }
+    
+    history.forEach(entry => {
+      const changeText = entry.description || (entry.delta > 0 ? '+' : '') + entry.delta;
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${entry.time || ''}</td>
+        <td>${entry.type || ''}</td>
+        <td>${entry.name || ''}</td>
+        <td>${changeText}</td>
+      `;
+      tbody.appendChild(row);
     });
   }
-  setInterval(updateLunchTimers, 1000);
+
+  // Функции для таймеров обеда
+  function startLunch(person) {
+    lunchRef.child(person).set(Date.now())
+      .catch(error => {
+        console.error('Ошибка запуска таймера:', error);
+      });
+  }
+
+  function stopLunch(person) {
+    lunchRef.child(person).set(null)
+      .catch(error => {
+        console.error('Ошибка остановки таймера:', error);
+      });
+  }
+
+  function updateLunchTimers() {
+    const persons = ['bock', 'gertz', 'sogaeva'];
+    
+    persons.forEach(person => {
+      const element = document.getElementById('timer-' + person);
+      if (!element) return;
+      
+      const started = lunchState[person];
+      
+      if (!started) {
+        element.textContent = '';
+        return;
+      }
+      
+      const msLeft = 60 * 60 * 1000 - (Date.now() - started);
+      
+      if (msLeft <= 0) {
+        element.textContent = 'Обед окончен';
+        lunchRef.child(person).set(null);
+        return;
+      }
+      
+      const minutes = Math.floor(msLeft / 60000);
+      const seconds = Math.floor((msLeft % 60000) / 1000);
+      const startTime = new Date(started);
+      const hours = String(startTime.getHours()).padStart(2, '0');
+      const mins = String(startTime.getMinutes()).padStart(2, '0');
+      const timeText = hours + ':' + mins;
+      
+      element.textContent = ` Осталось ${minutes} мин ${seconds} сек | старт: ${timeText}`;
+    });
+  }
+
+  // Инициализация приложения
+  function initApp() {
+    initTheme();
+    initDate();
+    
+    // Слушатель для счетчиков
+    countersRef.on('value', snapshot => {
+      const val = snapshot.val();
+      if (val) {
+        data = Object.keys(val).map(key => ({
+          key,
+          name: val[key].name,
+          type: val[key].type,
+          count: val[key].count || 0
+        }));
+        renderCounters();
+      } else {
+        initDefaultData();
+      }
+    }, error => {
+      console.error('Ошибка загрузки счетчиков:', error);
+    });
+    
+    // Слушатель для истории
+    historyRef.limitToLast(50).on('value', snapshot => {
+      const val = snapshot.val();
+      const history = val ? Object.values(val).reverse() : [];
+      renderHistory(history);
+    }, error => {
+      console.error('Ошибка загрузки истории:', error);
+    });
+    
+    // Слушатель для таймеров обеда
+    lunchRef.on('value', snapshot => {
+      lunchState = snapshot.val() || {};
+      updateLunchTimers();
+    }, error => {
+      console.error('Ошибка загрузки таймеров:', error);
+    });
+    
+    // Запуск интервала для обновления таймеров
+    setInterval(updateLunchTimers, 1000);
+  }
+
+  // Запуск приложения после загрузки DOM
+  document.addEventListener('DOMContentLoaded', initApp);
 </script>
 </body>
 </html>
