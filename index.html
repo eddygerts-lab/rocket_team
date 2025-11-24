@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Мы тут работаем</title>
+  <title>Мы тут работаем 🚀</title>
   <style>
     body { 
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -38,15 +38,16 @@
       text-align: center;
     }
 
-    /* Дата + кнопка темы */
+    /* Дата + кнопка темы — по центру */
     .date-with-theme {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      width: 100%;
+      gap: 12px;
       margin-bottom: 24px;
       font-size: 1em;
       color: #888;
+      width: 100%;
     }
     .toggle-theme {
       background: none;
@@ -136,7 +137,7 @@
     .count { font-size: 1.13em; font-weight: bold; color: #242f3e; }
     .dark .count { color: #ffffff; }
 
-    /* Таймеры — без фрейма, просто список */
+    /* Таймеры */
     .timer-list {
       width: 100%;
       margin-top: 8px;
@@ -194,7 +195,7 @@
       color: #ff6b6b !important;
     }
 
-    /* История — таблица по ширине 420px */
+    /* История — таблица */
     .history-table {
       width: 100%;
       border-collapse: collapse;
@@ -229,14 +230,6 @@
     .history-table td {
       font-family: monospace;
     }
-
-    @media (max-width: 480px) {
-      .date-with-theme {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-      }
-    }
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -245,7 +238,7 @@
 <body>
   <div class="layout">
     <div class="center-block">
-      <div id="mainTitle">Мы тут работаем🚀</div>
+      <div id="mainTitle">Мы тут работаем</div>
 
       <div class="date-with-theme">
         <div id="currentDateTime"></div>
@@ -257,7 +250,6 @@
 
       <button class="btn-reset" onclick="resetAll()">Обнулить всё</button>
 
-      <!-- Таймеры обеда — без фрейма -->
       <div class="section-title">⏰ Таймеры обеда (60 минут)</div>
       <div class="timer-list">
         <div class="timer-item">
@@ -286,7 +278,6 @@
         </div>
       </div>
 
-      <!-- История изменений -->
       <div class="section-title">📋 История изменений</div>
       <table class="history-table">
         <thead>
@@ -379,24 +370,40 @@
       });
     }
 
+    function logHistory(type, name, delta = 0, description = '') {
+      const time = new Date().toLocaleString('ru-RU', {
+        timeZone: 'Europe/Moscow',
+        hour: '2-digit',
+        minute: '2-digit',
+        day: 'numeric',
+        month: 'long'
+      });
+      historyRef.push({ time, type, name, delta, description });
+    }
+
     function changeCount(name, type, sign) {
       const item = data.find(i => i.name === name && i.type === type);
       if (!item) return;
       const delta = sign * getStep(type);
       const newCount = Math.max(0, item.count + delta);
       countersRef.child(getKey(name, type) + '/count').set(newCount);
-      historyRef.push({
-        time: new Date().toLocaleString('ru-RU', {
-          timeZone: 'Europe/Moscow',
-          hour: '2-digit',
-          minute: '2-digit',
-          day: 'numeric',
-          month: 'long'
-        }),
-        type,
-        name,
-        delta
-      });
+      logHistory(type, name, delta);
+    }
+
+    function startLunch(person) {
+      const nameMap = { bock: "Бочкарев", gertz: "Герц", sogaeva: "Согаева" };
+      const name = nameMap[person] || person;
+      lunchRef.child(person).set(Date.now()).then(() => {
+        logHistory("Таймер", name, 0, "Старт");
+      }).catch(console.error);
+    }
+
+    function stopLunch(person) {
+      const nameMap = { bock: "Бочкарев", gertz: "Герц", sogaeva: "Согаева" };
+      const name = nameMap[person] || person;
+      lunchRef.child(person).set(null).then(() => {
+        logHistory("Таймер", name, 0, "Стоп");
+      }).catch(console.error);
     }
 
     function resetAll() {
@@ -409,19 +416,7 @@
         if (item.type === "Блокировки") totalBlocks += item.count;
       });
       countersRef.update(updates).catch(console.error);
-      historyRef.push({
-        time: new Date().toLocaleString('ru-RU', {
-          timeZone: 'Europe/Moscow',
-          hour: '2-digit',
-          minute: '2-digit',
-          day: 'numeric',
-          month: 'long'
-        }),
-        type: "Система",
-        name: "",
-        delta: 0,
-        description: `Обнуление: заявки -${totalClaims}, блокировки -${totalBlocks}`
-      });
+      logHistory("Система", "", 0, `Обнуление: заявки -${totalClaims}, блокировки -${totalBlocks}`);
     }
 
     function renderCounters() {
@@ -487,13 +482,6 @@
         `;
         tbody.appendChild(row);
       });
-    }
-
-    function startLunch(person) {
-      lunchRef.child(person).set(Date.now()).catch(console.error);
-    }
-    function stopLunch(person) {
-      lunchRef.child(person).set(null).catch(console.error);
     }
 
     function updateLunchTimers() {
