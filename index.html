@@ -124,12 +124,33 @@
   <tbody id="historyBody"></tbody>
 </table>
 
-<!-- Firebase SDK (compat-режим) -->
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
 <script>
-  // 🔥 ВАШ Firebase Config — без изменений
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBb0uemCwfr3LpSjqCfbrPzgXMxqJo8ub0",
+  authDomain: "rocketteam-counter.firebaseapp.com",
+  databaseURL: "https://rocketteam-counter-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "rocketteam-counter",
+  storageBucket: "rocketteam-counter.firebasestorage.app",
+  messagingSenderId: "882235505564",
+  appId: "1:882235505564:web:01dbef24064b0fed5a2659",
+  measurementId: "G-RN86EZF81C"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
   const firebaseConfig = {
     apiKey: "AIzaSyBb0uemCwfr3LpSjqCfbrPzgXMxqJo8ub0",
     authDomain: "rocketteam-counter.firebaseapp.com",
@@ -153,7 +174,7 @@
 
   let data = [];
 
-  // 🔁 Слушаем счётчики
+  // 🔄 Слушаем счётчики
   countersRef.on('value', (snapshot) => {
     const val = snapshot.val();
     if (val) {
@@ -162,11 +183,11 @@
       }));
       renderCounters();
     } else {
-      initDefaultData();
+      initDefaultData(); // Создаём начальные данные
     }
   });
 
-  // 🔁 Слушаем историю
+  // 🔄 Слушаем историю
   historyRef.limitToLast(50).on('value', (snapshot) => {
     const val = snapshot.val();
     if (val) {
@@ -191,7 +212,21 @@
       const key = getKey(item.name, item.type);
       updates[key] = item;
     });
-    countersRef.set(updates);
+    countersRef.set(updates)
+      .then(() => {
+        // После успешной записи — перезагружаем данные
+        return countersRef.once('value');
+      })
+      .then(snapshot => {
+        const val = snapshot.val();
+        data = Object.keys(val).map(key => ({
+          key, name: val[key].name, type: val[key].type, count: val[key].count || 0
+        }));
+        renderCounters();
+      })
+      .catch(error => {
+        console.error("Ошибка инициализации:", error);
+      });
   }
 
   function getKey(name, type) {
@@ -227,7 +262,21 @@
       if (item.type === "Заявки") totalClaims += item.count;
       if (item.type === "Блокировки") totalBlocks += item.count;
     });
-    countersRef.update(updates);
+    countersRef.update(updates)
+      .then(() => {
+        // После сброса — перезагружаем данные
+        return countersRef.once('value');
+      })
+      .then(snapshot => {
+        const val = snapshot.val();
+        data = Object.keys(val).map(key => ({
+          key, name: val[key].name, type: val[key].type, count: val[key].count || 0
+        }));
+        renderCounters();
+      })
+      .catch(error => {
+        console.error("Ошибка сброса:", error);
+      });
 
     historyRef.push({
       time: new Date().toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'long' }),
