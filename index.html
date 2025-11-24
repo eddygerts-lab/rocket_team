@@ -1,38 +1,21 @@
-<!-- Подключение Firebase -->
+<!-- Подключение Firebase (только compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
 <script>
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBb0uemCwfr3LpSjqCfbrPzgXMxqJo8ub0",
-  authDomain: "rocketteam-counter.firebaseapp.com",
-  databaseURL: "https://rocketteam-counter-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "rocketteam-counter",
-  storageBucket: "rocketteam-counter.firebasestorage.app",
-  messagingSenderId: "882235505564",
-  appId: "1:882235505564:web:01dbef24064b0fed5a2659",
-  measurementId: "G-RN86EZF81C"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+  // 🔥 ТОЛЬКО ОДИН firebaseConfig — ваш настоящий
   const firebaseConfig = {
-    apiKey: "AIzaSy...",
-    authDomain: "team-counter.firebaseapp.com",
-    databaseURL: "https://team-counter-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "team-counter",
-    appId: "1:123456789:web:..."
+    apiKey: "AIzaSyBb0uemCwfr3LpSjqCfbrPzgXMxqJo8ub0",
+    authDomain: "rocketteam-counter.firebaseapp.com",
+    databaseURL: "https://rocketteam-counter-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "rocketteam-counter",
+    storageBucket: "rocketteam-counter.firebasestorage.app",
+    messagingSenderId: "882235505564",
+    appId: "1:882235505564:web:01dbef24064b0fed5a2659",
+    measurementId: "G-RN86EZF81C"
   };
 
-  // Инициализация
+  // Инициализация (compat-режим — firebase становится глобальным)
   firebase.initializeApp(firebaseConfig);
   const database = firebase.database();
   const countersRef = database.ref('counters');
@@ -44,12 +27,22 @@ const analytics = getAnalytics(app);
     day: 'numeric', month: 'long', year: 'numeric'
   });
 
-  // Получение данных из Firebase
   let data = [];
+
+  // Получение данных в реальном времени
   countersRef.on('value', (snapshot) => {
     const val = snapshot.val();
-    data = val ? Object.values(val) : getDefaultData();
-    renderCounters();
+    if (val) {
+      // Firebase хранит объекты, где ключи — это id, а значения — данные
+      data = Object.keys(val).map(key => ({
+        ...val[key],
+        id: key
+      }));
+      renderCounters();
+    } else {
+      // Если данных нет — инициализируем
+      initializeDefaultData();
+    }
   });
 
   function getDefaultData() {
@@ -63,65 +56,67 @@ const analytics = getAnalytics(app);
     ];
   }
 
-  // Шаг изменения
+  function initializeDefaultData() {
+    const defaultData = getDefaultData();
+    const updates = {};
+    defaultData.forEach(item => {
+      const key = getKeyByNameType(item.name, item.type);
+      updates[key] = item;
+    });
+    countersRef.set(updates);
+  }
+
+  function getKeyByNameType(name, type) {
+    return name + '_' + type.replace(/\s+/g, '_');
+  }
+
   function getStep(type) {
     return type === "Блокировки" ? 2 : 1;
   }
 
-  // Обновление счётчика
   function changeCount(name, type, sign) {
     const item = data.find(i => i.name === name && i.type === type);
     if (!item) return;
-    
+
     const step = getStep(type);
     const delta = sign * step;
     const newCount = Math.max(0, item.count + delta);
-    
-    // Обновляем в Firebase
-    countersRef.child(getKeyByNameType(name, type)).update({ count: newCount });
-    
-    // Логируем в историю
+
+    const key = getKeyByNameType(name, type);
+    countersRef.child(key + '/count').set(newCount);
+
     historyRef.push({
       time: new Date().toLocaleString('ru-RU'),
       type,
       name,
-      delta,
-      timestamp: firebase.database.ServerValue.TIMESTAMP
+      delta
     });
   }
 
-  // Сброс
   function resetAll() {
     if (!confirm("Обнулить все счётчики?")) return;
-    
+
     const updates = {};
     let totalClaims = 0, totalBlocks = 0;
-    
+
     data.forEach(item => {
       const key = getKeyByNameType(item.name, item.type);
       updates[key + '/count'] = 0;
       if (item.type === "Заявки") totalClaims += item.count;
       if (item.type === "Блокировки") totalBlocks += item.count;
     });
-    
+
     countersRef.update(updates);
-    
+
     historyRef.push({
       time: new Date().toLocaleString('ru-RU'),
       type: "Система",
       name: "",
       delta: 0,
-      description: `Обнуление: заявки -${totalClaims}, блокировки -${totalBlocks}`,
-      timestamp: firebase.database.ServerValue.TIMESTAMP
+      description: `Обнуление: заявки -${totalClaims}, блокировки -${totalBlocks}`
     });
   }
 
-  // Вспомогательная функция: генерация ключа
-  function getKeyByNameType(name, type) {
-    return name + '_' + type.replace(' ', '_');
-  }
-
-  // Рендер
   function renderCounters() {
     const claims = data.filter(i => i.type === "Заявки");
     const blocks = data.filter(i => i.type === "Блокировки");
@@ -144,19 +139,4 @@ const analytics = getAnalytics(app);
     renderList(claims, 'listClaims');
     renderList(blocks, 'listBlocks');
   }
-
-  // Инициализация
-  countersRef.once('value', (snapshot) => {
-    if (!snapshot.exists()) {
-      // Первый запуск — сохраняем начальные данные
-      const defaultData = getDefaultData();
-      const updates = {};
-      defaultData.forEach(item => {
-        updates[getKeyByNameType(item.name, item.type)] = item;
-      });
-      countersRef.set(updates);
-    }
-  });
 </script>
-</body>
-</html>
