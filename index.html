@@ -76,11 +76,134 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
 <script>
-  // 🔥 Ваш реальный firebaseConfig (без дублей!)
+  // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBb0uemCwfr3LpSjqCfbrPzgXMxqJo8ub0",
+  authDomain: "rocketteam-counter.firebaseapp.com",
+  databaseURL: "https://rocketteam-counter-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "rocketteam-counter",
+  storageBucket: "rocketteam-counter.firebasestorage.app",
+  messagingSenderId: "882235505564",
+  appId: "1:882235505564:web:01dbef24064b0fed5a2659",
+  measurementId: "G-RN86EZF81C"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
   const firebaseConfig = {
     apiKey: "AIzaSyBb0uemCwfr3LpSjqCfbrPzgXMxqJo8ub0",
     authDomain: "rocketteam-counter.firebaseapp.com",
     databaseURL: "https://rocketteam-counter-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "rocketteam-counter",
     storageBucket: "rocketteam-counter.firebasestorage.app",
-    messagingSenderId: "8822355055
+    messagingSenderId: "882235505564",
+    appId: "1:882235505564:web:01dbef24064b0fed5a2659"
+  };
+
+  // Инициализация compat-режима
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const countersRef = db.ref('counters');
+
+  // DOM
+  document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ru-RU', {
+    day: 'numeric', month: 'long', year: 'numeric'
+  });
+
+  let data = [];
+
+  // 🔄 Слушаем изменения в реальном времени
+  countersRef.on('value', (snapshot) => {
+    const val = snapshot.val();
+    if (val) {
+      // Преобразуем объект Firebase в массив
+      data = Object.entries(val).map(([key, value]) => ({
+        key,
+        name: value.name,
+        type: value.type,
+        count: value.count || 0
+      }));
+      renderCounters();
+    } else {
+      // Первый запуск — инициализируем данные
+      initDefaultData();
+    }
+  });
+
+  function initDefaultData() {
+    const defaults = [
+      { name: "Бочкарев", type: "Заявки", count: 3 },
+      { name: "Герц", type: "Заявки", count: 3 },
+      { name: "Согаева", type: "Заявки", count: 3 },
+      { name: "Бочкарев", type: "Блокировки", count: 2 },
+      { name: "Герц", type: "Блокировки", count: 2 },
+      { name: "Согаева", type: "Блокировки", count: 2 }
+    ];
+    const updates = {};
+    defaults.forEach(item => {
+      const key = getKey(item.name, item.type);
+      updates[key] = item;
+    });
+    countersRef.set(updates);
+  }
+
+  function getKey(name, type) {
+    return name + '_' + type.replace(/\s+/g, '_');
+  }
+
+  function getStep(type) {
+    return type === "Блокировки" ? 2 : 1;
+  }
+
+  function changeCount(name, type, sign) {
+    const item = data.find(i => i.name === name && i.type === type);
+    if (!item) return;
+
+    const delta = sign * getStep(type);
+    const newCount = Math.max(0, item.count + delta);
+    countersRef.child(getKey(name, type) + '/count').set(newCount);
+  }
+
+  function resetAll() {
+    if (!confirm("Обнулить все счётчики?")) return;
+    const updates = {};
+    data.forEach(item => {
+      updates[getKey(item.name, item.type) + '/count'] = 0;
+    });
+    countersRef.update(updates);
+  }
+
+  function renderCounters() {
+    const claims = data.filter(i => i.type === "Заявки");
+    const blocks = data.filter(i => i.type === "Блокировки");
+
+    const render = (items, id) => {
+      const el = document.getElementById(id);
+      el.innerHTML = '';
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `
+          <div class="btn minus" onclick="changeCount('${item.name}', '${item.type}', -1)">–</div>
+          <div class="title"><strong>${item.type} ${item.name}</strong><br><span class="count">${item.count}</span></div>
+          <div class="btn plus" onclick="changeCount('${item.name}', '${item.type}', 1)">+</div>
+        `;
+        el.appendChild(div);
+      });
+    };
+
+    render(claims, 'listClaims');
+    render(blocks, 'listBlocks');
+  }
+</script>
+
+</body>
+</html>
