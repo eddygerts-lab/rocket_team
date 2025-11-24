@@ -31,66 +31,6 @@
       max-width:900px; 
       margin:0 auto;
     }
-    .leftbar { 
-      width:160px; 
-      min-width:110px; 
-      background:#f9f9f9; 
-      border-right:1px solid #e1e1e1; 
-      padding:32px 14px 0 14px;
-      transition: background-color 0.3s, border-color 0.3s;
-    }
-    .dark .leftbar {
-      background:#2c3139;
-      border-color:#41454b;
-    }
-    .mini-timers { 
-      display:flex; 
-      flex-direction:column; 
-      gap:13px;
-    }
-    .mini-timer { 
-      display:flex; 
-      align-items:center; 
-      font-size:0.98em; 
-      margin-bottom:0;
-    }
-    .mini-name { 
-      width:86px; 
-      padding-right:7px;
-    }
-    .mini-display { 
-      font-family:monospace; 
-      min-width:108px; 
-      font-size:0.96em;
-    }
-    .mini-btn {
-      font-size:0.85em; 
-      margin-left:7px; 
-      padding:4px 14px; 
-      border-radius:5px; 
-      border:none; 
-      font-weight:bold;
-      cursor:pointer; 
-      transition:background 0.2s; 
-      min-width:52px;
-    }
-    .mini-start { 
-      background:#27ae60; 
-      color:#fff; 
-      border:1px solid #229b51;
-    }
-    .mini-stop  { 
-      background:#e74c3c; 
-      color:#fff; 
-      border:1px solid #be2d1d; 
-      margin-left:3px;
-    }
-    .mini-start:hover { 
-      background:#219150;
-    }
-    .mini-stop:hover  { 
-      background:#c0392b;
-    }
     .center-content { 
       flex:1; 
       padding:34px 24px 12px 24px;
@@ -199,6 +139,88 @@
     .dark .count { 
       color: #ffffff; 
     }
+    
+    /* Стили для таймеров */
+    .timers-container {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 10px;
+      border: 1px solid #e1e1e1;
+    }
+    .dark .timers-container {
+      background: #2c3139;
+      border-color: #41454b;
+    }
+    .timer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .timer-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 15px;
+      background: white;
+      border: 1px solid #e1e1e1;
+      border-radius: 8px;
+    }
+    .dark .timer-item {
+      background: #343841;
+      border-color: #444;
+    }
+    .timer-name {
+      font-weight: bold;
+      min-width: 80px;
+    }
+    .timer-display {
+      font-family: monospace;
+      font-size: 0.95em;
+      color: #2c3e50;
+      flex-grow: 1;
+      text-align: center;
+      padding: 0 10px;
+    }
+    .dark .timer-display {
+      color: #eceef1;
+    }
+    .timer-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    .timer-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.85em;
+      transition: background-color 0.2s;
+    }
+    .timer-start {
+      background: #27ae60;
+      color: white;
+    }
+    .timer-stop {
+      background: #e74c3c;
+      color: white;
+    }
+    .timer-start:hover {
+      background: #219150;
+    }
+    .timer-stop:hover {
+      background: #c0392b;
+    }
+    .timer-finished {
+      color: #e74c3c;
+      font-weight: bold;
+    }
+    .dark .timer-finished {
+      color: #ff6b6b;
+    }
+
     .history-title { 
       font-weight:bold; 
       margin:18px 0 8px 0; 
@@ -246,14 +268,14 @@
       .layout {
         flex-direction:column;
       }
-      .center-content, .leftbar {
+      .center-content {
         padding:12px;
       }
       .center-content .item, .btn-reset{
         max-width:98vw;
       }
-      .leftbar{
-        width:98vw;
+      .timer-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -265,34 +287,47 @@
 <body>
 <button class="toggle-theme" onclick="toggleTheme()">🌞</button>
 <div class="layout">
-  <div class="leftbar">
-    <div class="mini-timers">
-      <div class="mini-timer">
-        <span class="mini-name">Бочкарев</span>
-        <span id="timer-bock" class="mini-display"></span>
-        <button class="mini-btn mini-start" onclick="startLunch('bock')">Старт</button>
-        <button class="mini-btn mini-stop" onclick="stopLunch('bock')">Стоп</button>
-      </div>
-      <div class="mini-timer">
-        <span class="mini-name">Герц</span>
-        <span id="timer-gertz" class="mini-display"></span>
-        <button class="mini-btn mini-start" onclick="startLunch('gertz')">Старт</button>
-        <button class="mini-btn mini-stop" onclick="stopLunch('gertz')">Стоп</button>
-      </div>
-      <div class="mini-timer">
-        <span class="mini-name">Согаева</span>
-        <span id="timer-sogaeva" class="mini-display"></span>
-        <button class="mini-btn mini-start" onclick="startLunch('sogaeva')">Старт</button>
-        <button class="mini-btn mini-stop" onclick="stopLunch('sogaeva')">Стоп</button>
-      </div>
-    </div>
-  </div>
   <div class="center-content">
     <div id="mainTitle">Мы тут работаем 🚀</div>
     <div id="currentDate"></div>
+    
+    <!-- Счетчики -->
     <div id="listClaims"></div>
     <div id="listBlocks"></div>
+    
     <button class="btn-reset" onclick="resetAll()">Обнулить всё</button>
+    
+    <!-- Таймеры -->
+    <div class="timers-container">
+      <div class="section-title">⏰ Таймеры обеда (60 минут)</div>
+      <div class="timer-grid">
+        <div class="timer-item">
+          <span class="timer-name">Бочкарев</span>
+          <span id="timer-bock" class="timer-display">Не активен</span>
+          <div class="timer-buttons">
+            <button class="timer-btn timer-start" onclick="startLunch('bock')">Старт</button>
+            <button class="timer-btn timer-stop" onclick="stopLunch('bock')">Стоп</button>
+          </div>
+        </div>
+        <div class="timer-item">
+          <span class="timer-name">Герц</span>
+          <span id="timer-gertz" class="timer-display">Не активен</span>
+          <div class="timer-buttons">
+            <button class="timer-btn timer-start" onclick="startLunch('gertz')">Старт</button>
+            <button class="timer-btn timer-stop" onclick="stopLunch('gertz')">Стоп</button>
+          </div>
+        </div>
+        <div class="timer-item">
+          <span class="timer-name">Согаева</span>
+          <span id="timer-sogaeva" class="timer-display">Не активен</span>
+          <div class="timer-buttons">
+            <button class="timer-btn timer-start" onclick="startLunch('sogaeva')">Старт</button>
+            <button class="timer-btn timer-stop" onclick="stopLunch('sogaeva')">Стоп</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="history-title">📋 История изменений</div>
     <table class="history-table">
       <thead>
@@ -382,12 +417,12 @@
 
   function initDefaultData() {
     const defaults = [
-      { name: "Бочкарев", type: "Заявки", count: 0 },
-      { name: "Герц", type: "Заявки", count: 0 },
-      { name: "Согаева", type: "Заявки", count: 0 },
-      { name: "Бочкарев", type: "Блокировки", count: 0 },
-      { name: "Герц", type: "Блокировки", count: 0 },
-      { name: "Согаева", type: "Блокировки", count: 0 }
+      { name: "Бочкарев", type: "Заявки", count: 3 },
+      { name: "Герц", type: "Заявки", count: 3 },
+      { name: "Согаева", type: "Заявки", count: 3 },
+      { name: "Бочкарев", type: "Блокировки", count: 2 },
+      { name: "Герц", type: "Блокировки", count: 2 },
+      { name: "Согаева", type: "Блокировки", count: 2 }
     ];
     
     const updates = {};
@@ -531,6 +566,9 @@
   // Функции для таймеров обеда
   function startLunch(person) {
     lunchRef.child(person).set(Date.now())
+      .then(() => {
+        console.log(`Таймер запущен для ${person}`);
+      })
       .catch(error => {
         console.error('Ошибка запуска таймера:', error);
       });
@@ -538,6 +576,9 @@
 
   function stopLunch(person) {
     lunchRef.child(person).set(null)
+      .then(() => {
+        console.log(`Таймер остановлен для ${person}`);
+      })
       .catch(error => {
         console.error('Ошибка остановки таймера:', error);
       });
@@ -553,15 +594,17 @@
       const started = lunchState[person];
       
       if (!started) {
-        element.textContent = '';
+        element.textContent = 'Не активен';
+        element.className = 'timer-display';
         return;
       }
       
-      const msLeft = 60 * 60 * 1000 - (Date.now() - started);
+      const elapsed = Date.now() - started;
+      const msLeft = 60 * 60 * 1000 - elapsed; // 60 минут в миллисекундах
       
       if (msLeft <= 0) {
-        element.textContent = 'Обед окончен';
-        lunchRef.child(person).set(null);
+        element.textContent = 'Обед окончен!';
+        element.className = 'timer-display timer-finished';
         return;
       }
       
@@ -570,9 +613,9 @@
       const startTime = new Date(started);
       const hours = String(startTime.getHours()).padStart(2, '0');
       const mins = String(startTime.getMinutes()).padStart(2, '0');
-      const timeText = hours + ':' + mins;
       
-      element.textContent = ` Осталось ${minutes} мин ${seconds} сек | старт: ${timeText}`;
+      element.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} | старт: ${hours}:${mins}`;
+      element.className = 'timer-display';
     });
   }
 
