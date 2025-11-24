@@ -555,35 +555,36 @@
   }
 
   function updateLunchTimers() {
-    const persons = ['bock', 'gertz', 'sogaeva'];
-    persons.forEach(person => {
-      const el = document.getElementById('timer-' + person);
-      if (!el) return;
-
-      const started = lunchState[person];
-      if (started == null || typeof started !== 'number') {
-        el.textContent = 'Не активен';
-        el.className = 'timer-display';
-        return;
-      }
-
-      const elapsed = Date.now() - started;
-      const totalMs = 60 * 60 * 1000;
-      const remainingMs = totalMs - elapsed;
-
-      if (remainingMs <= 0) {
-        el.textContent = 'Обед окончен!';
-        el.className = 'timer-display timer-finished';
-        return;
-      }
-
-      const minutes = Math.floor(remainingMs / 60000);
-      const seconds = Math.floor((remainingMs % 60000) / 1000);
-      const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-      el.textContent = display;
+  const persons = ['bock', 'gertz', 'sogaeva'];
+  persons.forEach(person => {
+    const el = document.getElementById('timer-' + person);
+    if (!el) return;
+    // Более строгая обработка типов
+    let started = lunchState[person];
+    if (typeof started !== 'number') started = Number(started);
+    if (!started) {
+      el.textContent = 'Не активен';
       el.className = 'timer-display';
-    });
-  }
+      return;
+    }
+    let msLeft = 60 * 60 * 1000 - (Date.now() - started);
+    if (msLeft <= 0) {
+      el.textContent = 'Обед окончен!';
+      el.className = 'timer-display timer-finished';
+      lunchRef.child(person).set(null);
+      return;
+    }
+    let min = Math.floor(msLeft / 60000);
+    let sec = Math.floor((msLeft % 60000) / 1000);
+    let minStr = String(min).padStart(2, '0');
+    let secStr = String(sec).padStart(2, '0');
+    let startDate = new Date(started);
+    let hours = String(startDate.getHours()).padStart(2, '0');
+    let minutes = String(startDate.getMinutes()).padStart(2, '0');
+    el.textContent = `${minStr}:${secStr} | старт: ${hours}:${minutes}`;
+    el.className = 'timer-display';
+  });
+}
 
   // === Инициализация ===
   function initApp() {
