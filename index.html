@@ -24,7 +24,7 @@
     }
     .center-block {
       width: 100%;
-      max-width: 420px;
+      max-width: 800px; /* Увеличена ширина для таймеров и истории */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -335,19 +335,27 @@
 
     // === Дата и время по Москве (без "в", без "г.") ===
     function initDateTime() {
-      const options = {
-        timeZone: 'Europe/Moscow',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
+      const formatDateTime = () => {
+        const now = new Date();
+        const date = now.toLocaleDateString('ru-RU', {
+          timeZone: 'Europe/Moscow',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+        const time = now.toLocaleTimeString('ru-RU', {
+          timeZone: 'Europe/Moscow',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+        // Убираем "г." из даты и предлог "в" из времени
+        return `${date.replace(' г.', ',')} ${time}`;
       };
-      const formatter = new Intl.DateTimeFormat('ru-RU', options);
-      document.getElementById('currentDateTime').textContent = formatter.format(new Date());
+
+      document.getElementById('currentDateTime').textContent = formatDateTime();
       setInterval(() => {
-        document.getElementById('currentDateTime').textContent = formatter.format(new Date());
+        document.getElementById('currentDateTime').textContent = formatDateTime();
       }, 1000);
     }
 
@@ -378,16 +386,22 @@
       });
     }
 
-    // === Формат времени для истории (без "г.") ===
+    // === Формат времени для истории (без "г." и без предлога "в") ===
     function formatTimeForHistory(date) {
-      return new Intl.DateTimeFormat('ru-RU', {
+      const dateStr = date.toLocaleDateString('ru-RU', {
         timeZone: 'Europe/Moscow',
         day: 'numeric',
         month: 'long',
-        year: 'numeric',
+        year: 'numeric'
+      }).replace(' г.', '');
+      
+      const timeStr = date.toLocaleTimeString('ru-RU', {
+        timeZone: 'Europe/Moscow',
         hour: '2-digit',
         minute: '2-digit'
-      }).format(date).replace(/г\.,?/g, '').trim();
+      });
+      
+      return `${dateStr} ${timeStr}`;
     }
 
     // === Логирование в историю ===
