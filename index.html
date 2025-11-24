@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Мы тут работаем 🚀</title>
   <style>
     body { 
@@ -16,37 +15,17 @@
       background:#23272d; 
       color:#eceef1;
     }
-
-    /* === ЗАГОЛОВОК С КНОПКОЙ ТЕМЫ === */
-    .title-with-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    #mainTitle {
-      font-size: 2em;
-      font-weight: 700;
-      margin: 0;
-    }
     .toggle-theme {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 24px;
+      position:fixed; 
+      top:18px; 
+      right:24px; 
+      font-size:26px;
+      background: none; 
+      border: none; 
+      cursor: pointer; 
+      z-index:10;
       color: inherit;
-      padding: 4px;
-      border-radius: 6px;
-      transition: background-color 0.2s;
     }
-    .toggle-theme:hover {
-      background-color: rgba(0,0,0,0.05);
-    }
-    .dark .toggle-theme:hover {
-      background-color: rgba(255,255,255,0.08);
-    }
-
     .layout { 
       display:flex; 
       max-width:900px; 
@@ -55,9 +34,12 @@
     .center-content { 
       flex:1; 
       padding:34px 24px 12px 24px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    }
+    #mainTitle { 
+      text-align:center; 
+      font-size:2em; 
+      font-weight:700; 
+      margin-bottom:12px;
     }
     #currentDate { 
       text-align: center; 
@@ -157,24 +139,22 @@
     .dark .count { 
       color: #ffffff; 
     }
-
-    /* Таймеры — вертикально */
+    
+    /* Стили для таймеров */
     .timers-container {
       margin-top: 30px;
       padding: 20px;
       background: #f9f9f9;
       border-radius: 10px;
       border: 1px solid #e1e1e1;
-      width: 100%;
-      max-width: 420px;
     }
     .dark .timers-container {
       background: #2c3139;
       border-color: #41454b;
     }
-    .timer-list {
-      display: flex;
-      flex-direction: column;
+    .timer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 15px;
       margin-top: 15px;
     }
@@ -197,10 +177,11 @@
     }
     .timer-display {
       font-family: monospace;
-      font-size: 1em;
+      font-size: 0.95em;
       color: #2c3e50;
-      min-width: 120px;
+      flex-grow: 1;
       text-align: center;
+      padding: 0 10px;
     }
     .dark .timer-display {
       color: #eceef1;
@@ -233,11 +214,11 @@
       background: #c0392b;
     }
     .timer-finished {
-      color: #e74c3c !important;
+      color: #e74c3c;
       font-weight: bold;
     }
     .dark .timer-finished {
-      color: #ff6b6b !important;
+      color: #ff6b6b;
     }
 
     .history-title { 
@@ -293,31 +274,33 @@
       .center-content .item, .btn-reset{
         max-width:98vw;
       }
+      .timer-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
-
+  
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
+<button class="toggle-theme" onclick="toggleTheme()">🌞</button>
 <div class="layout">
   <div class="center-content">
-    <div class="title-with-toggle">
-      <div id="mainTitle">Мы тут работаем 🚀</div>
-      <button class="toggle-theme" onclick="toggleTheme()">🌞</button>
-    </div>
+    <div id="mainTitle">Мы тут работаем 🚀</div>
     <div id="currentDate"></div>
-
-    <!-- Счетчики — теперь по центру -->
-    <div id="listClaims" style="width: 100%; max-width: 420px;"></div>
-    <div id="listBlocks" style="width: 100%; max-width: 420px;"></div>
-
+    
+    <!-- Счетчики -->
+    <div id="listClaims"></div>
+    <div id="listBlocks"></div>
+    
     <button class="btn-reset" onclick="resetAll()">Обнулить всё</button>
-
+    
+    <!-- Таймеры -->
     <div class="timers-container">
       <div class="section-title">⏰ Таймеры обеда (60 минут)</div>
-      <div class="timer-list">
+      <div class="timer-grid">
         <div class="timer-item">
           <span class="timer-name">Бочкарев</span>
           <span id="timer-bock" class="timer-display">Не активен</span>
@@ -346,7 +329,7 @@
     </div>
 
     <div class="history-title">📋 История изменений</div>
-    <table class="history-table" style="width: 100%; max-width: 420px;">
+    <table class="history-table">
       <thead>
         <tr>
           <th>Дата и время</th>
@@ -361,7 +344,7 @@
 </div>
 
 <script>
-  // === Firebase config (без measurementId) ===
+  // Инициализация Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyBb0uemCwfr3LpSjqCfbrPzgXMxqJo8ub0",
     authDomain: "rocketteam-counter.firebaseapp.com",
@@ -369,52 +352,71 @@
     projectId: "rocketteam-counter",
     storageBucket: "rocketteam-counter.firebasestorage.app",
     messagingSenderId: "882235505564",
-    appId: "1:882235505564:web:01dbef24064b0fed5a2659"
+    appId: "1:882235505564:web:01dbef24064b0fed5a2659",
+    measurementId: "G-RN86EZF81C"
   };
 
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+  // Инициализируем Firebase
+  let app;
+  try {
+    app = firebase.app();
+    console.log('Firebase уже инициализирован');
+  } catch (e) {
+    app = firebase.initializeApp(firebaseConfig);
+    console.log('Firebase инициализирован');
   }
+  
   const db = firebase.database();
   const countersRef = db.ref('counters');
   const historyRef = db.ref('history');
   const lunchRef = db.ref('lunch');
 
+  // Переменные приложения
   let data = [];
   let lunchState = {};
 
-  // === Тема ===
+  // Переключение темы
   function toggleTheme() {
     const isDark = document.body.classList.toggle('dark');
-    document.querySelector('.toggle-theme').textContent = isDark ? '🌚' : '🌞';
+    const themeButton = document.querySelector('.toggle-theme');
+    themeButton.textContent = isDark ? '🌚' : '🌞';
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
   }
 
+  // Инициализация темы
   function initTheme() {
-    if (localStorage.getItem('theme') === 'dark') {
+    const savedTheme = localStorage.getItem('theme');
+    const themeButton = document.querySelector('.toggle-theme');
+    
+    if (savedTheme === 'dark') {
       document.body.classList.add('dark');
-      document.querySelector('.toggle-theme').textContent = '🌚';
+      themeButton.textContent = '🌚';
+    } else {
+      themeButton.textContent = '🌞';
     }
   }
 
-  // === Дата ===
+  // Установка даты
   function initDate() {
-    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ru-RU', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
+    const dateElement = document.getElementById('currentDate');
+    if (dateElement) {
+      dateElement.textContent = new Date().toLocaleDateString('ru-RU', { 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric' 
+      });
+    }
   }
 
-  // === Вспомогательные функции ===
-  function getKey(name, type) {
-    return name + '_' + type.replace(/\s+/g, '_');
+  // Функции для работы со счетчиками
+  function getKey(name, type) { 
+    return name + '_' + type.replace(/\s+/g, '_'); 
   }
-  function getStep(type) {
+
+  function getStep(type) { 
     return type === "Блокировки" ? 2 : 1;
   }
 
-  // === Инициализация данных ===
   function initDefaultData() {
     const defaults = [
       { name: "Бочкарев", type: "Заявки", count: 3 },
@@ -424,111 +426,132 @@
       { name: "Герц", type: "Блокировки", count: 2 },
       { name: "Согаева", type: "Блокировки", count: 2 }
     ];
+    
     const updates = {};
     defaults.forEach(item => {
-      updates[getKey(item.name, item.type)] = item;
+      const key = getKey(item.name, item.type);
+      updates[key] = item;
     });
-    countersRef.set(updates).catch(console.error);
+    
+    countersRef.set(updates).catch(error => {
+      console.error('Ошибка инициализации данных:', error);
+    });
   }
 
-  // === Счётчики ===
   function changeCount(name, type, sign) {
     const item = data.find(i => i.name === name && i.type === type);
-    if (!item) return;
+    if (!item) {
+      console.error('Элемент не найден:', name, type);
+      return;
+    }
+    
     const delta = sign * getStep(type);
     const newCount = Math.max(0, item.count + delta);
-    countersRef.child(getKey(name, type) + '/count').set(newCount)
-      .catch(err => console.error('Ошибка записи счетчика:', err));
-    historyRef.push({
-      time: new Date().toLocaleString('ru-RU', {
-        hour: '2-digit',
-        minute: '2-digit',
-        day: 'numeric',
-        month: 'long'
+    
+    countersRef.child(getKey(name, type)).update({ count: newCount })
+      .catch(error => {
+        console.error('Ошибка обновления счетчика:', error);
+      });
+    
+    // Логируем изменение в истории
+    const historyEntry = {
+      time: new Date().toLocaleString('ru-RU', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        day: 'numeric', 
+        month: 'long' 
       }),
-      type,
-      name,
-      delta
-    }).catch(err => console.error('Ошибка записи истории:', err));
+      type: type,
+      name: name,
+      delta: delta
+    };
+    
+    historyRef.push(historyEntry)
+      .catch(error => {
+        console.error('Ошибка записи в историю:', error);
+      });
   }
 
   function resetAll() {
     if (!confirm("Обнулить все счётчики?")) return;
+    
     const updates = {};
     let totalClaims = 0, totalBlocks = 0;
+    
     data.forEach(item => {
-      updates[getKey(item.name, item.type) + '/count'] = 0;
+      const key = getKey(item.name, item.type);
+      updates[key + '/count'] = 0;
+      
       if (item.type === "Заявки") totalClaims += item.count;
       if (item.type === "Блокировки") totalBlocks += item.count;
     });
-    countersRef.update(updates).catch(console.error);
-    historyRef.push({
-      time: new Date().toLocaleString('ru-RU', {
-        hour: '2-digit',
-        minute: '2-digit',
-        day: 'numeric',
-        month: 'long'
+    
+    countersRef.update(updates).catch(error => {
+      console.error('Ошибка обнуления счетчиков:', error);
+    });
+    
+    // Логируем обнуление в истории
+    const resetEntry = {
+      time: new Date().toLocaleString('ru-RU', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        day: 'numeric', 
+        month: 'long' 
       }),
-      type: "Система",
-      name: "",
+      type: "Системa", 
+      name: "", 
       delta: 0,
       description: `Обнуление: заявки -${totalClaims}, блокировки -${totalBlocks}`
-    }).catch(console.error);
+    };
+    
+    historyRef.push(resetEntry)
+      .catch(error => {
+        console.error('Ошибка записи обнуления в историю:', error);
+      });
   }
 
   function renderCounters() {
     const claims = data.filter(i => i.type === "Заявки");
     const blocks = data.filter(i => i.type === "Блокировки");
-
+    
     function renderList(items, containerId) {
       const container = document.getElementById(containerId);
-      if (!container) return;
+      if (!container) {
+        console.error('Контейнер не найден:', containerId);
+        return;
+      }
+      
       container.innerHTML = '';
       items.forEach(item => {
         const div = document.createElement('div');
         div.className = 'item';
-
-        const minusBtn = document.createElement('div');
-        minusBtn.className = 'btn minus';
-        minusBtn.textContent = '–';
-        minusBtn.addEventListener('click', () => changeCount(item.name, item.type, -1));
-
-        const titleDiv = document.createElement('div');
-        titleDiv.className = 'title';
-        const strong = document.createElement('strong');
-        strong.textContent = `${item.type} ${item.name}`;
-        const countSpan = document.createElement('span');
-        countSpan.className = 'count';
-        countSpan.textContent = item.count;
-        titleDiv.appendChild(strong);
-        titleDiv.appendChild(document.createElement('br'));
-        titleDiv.appendChild(countSpan);
-
-        const plusBtn = document.createElement('div');
-        plusBtn.className = 'btn plus';
-        plusBtn.textContent = '+';
-        plusBtn.addEventListener('click', () => changeCount(item.name, item.type, 1));
-
-        div.appendChild(minusBtn);
-        div.appendChild(titleDiv);
-        div.appendChild(plusBtn);
+        div.innerHTML = `
+          <div class="btn minus" onclick="changeCount('${item.name}', '${item.type}', -1)">–</div>
+          <div class="title"><strong>${item.type} ${item.name}</strong><br><span class="count">${item.count}</span></div>
+          <div class="btn plus" onclick="changeCount('${item.name}', '${item.type}', 1)">+</div>
+        `;
         container.appendChild(div);
       });
     }
-
+    
     renderList(claims, 'listClaims');
     renderList(blocks, 'listBlocks');
   }
 
-  // === История ===
   function renderHistory(history) {
     const tbody = document.getElementById('historyBody');
-    if (!tbody) return;
+    if (!tbody) {
+      console.error('Элемент historyBody не найден');
+      return;
+    }
+    
     tbody.innerHTML = '';
+    
     if (!history || history.length === 0) {
       tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">История пуста</td></tr>';
       return;
     }
+    
     history.forEach(entry => {
       const changeText = entry.description || (entry.delta > 0 ? '+' : '') + entry.delta;
       const row = document.createElement('tr');
@@ -542,57 +565,116 @@
     });
   }
 
-  // === Таймеры обеда ===
+  // Функции для таймеров обеда
   function startLunch(person) {
+    console.log('Запуск таймера для:', person);
     lunchRef.child(person).set(Date.now())
-      .then(() => console.log(`Таймер ${person} запущен`))
-      .catch(err => console.error(`Ошибка запуска таймера ${person}:`, err));
+      .then(() => {
+        console.log(`Таймер запущен для ${person}`);
+        // Добавляем запись в историю
+        const historyEntry = {
+          time: new Date().toLocaleString('ru-RU', { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            day: 'numeric', 
+            month: 'long' 
+          }),
+          type: "Обед",
+          name: getPersonName(person),
+          delta: 0,
+          description: "Старт обеда"
+        };
+        historyRef.push(historyEntry);
+      })
+      .catch(error => {
+        console.error('Ошибка запуска таймера:', error);
+        alert('Ошибка запуска таймера: ' + error.message);
+      });
   }
+
   function stopLunch(person) {
+    console.log('Остановка таймера для:', person);
     lunchRef.child(person).set(null)
-      .then(() => console.log(`Таймер ${person} остановлен`))
-      .catch(err => console.error(`Ошибка остановки таймера ${person}:`, err));
+      .then(() => {
+        console.log(`Таймер остановлен для ${person}`);
+        // Добавляем запись в историю
+        const historyEntry = {
+          time: new Date().toLocaleString('ru-RU', { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            day: 'numeric', 
+            month: 'long' 
+          }),
+          type: "Обед",
+          name: getPersonName(person),
+          delta: 0,
+          description: "Обед завершен"
+        };
+        historyRef.push(historyEntry);
+      })
+      .catch(error => {
+        console.error('Ошибка остановки таймера:', error);
+        alert('Ошибка остановки таймера: ' + error.message);
+      });
+  }
+
+  function getPersonName(personKey) {
+    const names = {
+      'bock': 'Бочкарев',
+      'gertz': 'Герц', 
+      'sogaeva': 'Согаева'
+    };
+    return names[personKey] || personKey;
   }
 
   function updateLunchTimers() {
-  const persons = ['bock', 'gertz', 'sogaeva'];
-  persons.forEach(person => {
-    const el = document.getElementById('timer-' + person);
-    if (!el) return;
-    // Более строгая обработка типов
-    let started = lunchState[person];
-    if (typeof started !== 'number') started = Number(started);
-    if (!started) {
-      el.textContent = 'Не активен';
-      el.className = 'timer-display';
-      return;
-    }
-    let msLeft = 60 * 60 * 1000 - (Date.now() - started);
-    if (msLeft <= 0) {
-      el.textContent = 'Обед окончен!';
-      el.className = 'timer-display timer-finished';
-      lunchRef.child(person).set(null);
-      return;
-    }
-    let min = Math.floor(msLeft / 60000);
-    let sec = Math.floor((msLeft % 60000) / 1000);
-    let minStr = String(min).padStart(2, '0');
-    let secStr = String(sec).padStart(2, '0');
-    let startDate = new Date(started);
-    let hours = String(startDate.getHours()).padStart(2, '0');
-    let minutes = String(startDate.getMinutes()).padStart(2, '0');
-    el.textContent = `${minStr}:${secStr} | старт: ${hours}:${minutes}`;
-    el.className = 'timer-display';
-  });
-}
+    const persons = ['bock', 'gertz', 'sogaeva'];
+    
+    persons.forEach(person => {
+      const element = document.getElementById('timer-' + person);
+      if (!element) {
+        console.log('Элемент не найден: timer-' + person);
+        return;
+      }
+      
+      const started = lunchState[person];
+      
+      if (!started) {
+        element.textContent = 'Не активен';
+        element.className = 'timer-display';
+        return;
+      }
+      
+      const elapsed = Date.now() - started;
+      const msLeft = 60 * 60 * 1000 - elapsed; // 60 минут в миллисекундах
+      
+      if (msLeft <= 0) {
+        element.textContent = 'Обед окончен!';
+        element.className = 'timer-display timer-finished';
+        return;
+      }
+      
+      const minutes = Math.floor(msLeft / 60000);
+      const seconds = Math.floor((msLeft % 60000) / 1000);
+      const startTime = new Date(started);
+      const hours = String(startTime.getHours()).padStart(2, '0');
+      const mins = String(startTime.getMinutes()).padStart(2, '0');
+      
+      element.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} | старт: ${hours}:${mins}`;
+      element.className = 'timer-display';
+    });
+  }
 
-  // === Инициализация ===
+  // Инициализация приложения
   function initApp() {
+    console.log('Инициализация приложения...');
     initTheme();
     initDate();
-
+    
+    // Слушатель для счетчиков
     countersRef.on('value', snapshot => {
       const val = snapshot.val();
+      console.log('Данные счетчиков загружены:', val);
       if (val) {
         data = Object.keys(val).map(key => ({
           key,
@@ -602,25 +684,50 @@
         }));
         renderCounters();
       } else {
+        console.log('Инициализация данных по умолчанию');
         initDefaultData();
       }
+    }, error => {
+      console.error('Ошибка загрузки счетчиков:', error);
     });
-
+    
+    // Слушатель для истории
     historyRef.limitToLast(50).on('value', snapshot => {
       const val = snapshot.val();
       const history = val ? Object.values(val).reverse() : [];
+      console.log('История загружена, записей:', history.length);
       renderHistory(history);
+    }, error => {
+      console.error('Ошибка загрузки истории:', error);
     });
-
+    
+    // Слушатель для таймеров обеда
     lunchRef.on('value', snapshot => {
-      lunchState = snapshot.val() || {};
+      const val = snapshot.val();
+      console.log('Состояние таймеров:', val);
+      lunchState = val || {};
       updateLunchTimers();
+    }, error => {
+      console.error('Ошибка загрузки таймеров:', error);
     });
-
+    
+    // Запуск интервала для обновления таймеров
     setInterval(updateLunchTimers, 1000);
+    console.log('Приложение инициализировано');
   }
 
-  document.addEventListener('DOMContentLoaded', initApp);
+  // Запуск приложения после загрузки DOM
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM загружен, запуск приложения...');
+    initApp();
+  });
+
+  // Глобальные функции для кнопок
+  window.startLunch = startLunch;
+  window.stopLunch = stopLunch;
+  window.toggleTheme = toggleTheme;
+  window.resetAll = resetAll;
+  window.changeCount = changeCount;
 </script>
 </body>
 </html>
