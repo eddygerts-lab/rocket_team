@@ -203,14 +203,14 @@
       const nameMap = { bock: "Бочкарев", gertz: "Герц", sogaeva: "Согаева" };
       const name = nameMap[person] || person;
       lunchRef.child(person).set(Date.now()).then(() => {
-        logHistory("Таймер", name, 0, "Старт");
+        logHistory("Обед", name, 0, "Старт");
       }).catch(console.error);
     }
     function stopLunch(person) {
       const nameMap = { bock: "Бочкарев", gertz: "Герц", sogaeva: "Согаева" };
       const name = nameMap[person] || person;
       lunchRef.child(person).set(null).then(() => {
-        logHistory("Таймер", name, 0, "Стоп");
+        logHistory("Обед", name, 0, "Стоп");
       }).catch(console.error);
     }
     function resetAll() {
